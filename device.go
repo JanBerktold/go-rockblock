@@ -11,22 +11,32 @@ type Device struct {
 	serial io.ReadWriteCloser
 	addr   string
 
-	QueueCommands bool
-	Queue         *lane.Queue
+	// AT Command handling
+	writingCommands bool
+	queueCommands   bool
+	commandQueue    *lane.Queue
+	commandCurrent  *command
 }
 
 // Internal function to load required dependencies based upon configuration
 func (dev *Device) initialize() {
 
-	if dev.QueueCommands {
-		dev.Queue = lane.NewQueue()
+	if dev.queueCommands {
+		dev.commandQueue = lane.NewQueue()
 	}
 
 }
 
 func connect(addr string, options []func(*Device)) (*Device, error) {
 	conf := &serial.Config{Name: addr, Baud: 19200}
-	dev := &Device{nil, addr, true, nil}
+	dev := &Device{
+		nil,
+		addr,
+		false,
+		true,
+		nil,
+		nil,
+	}
 
 	// apply user options
 	for _, fun := range options {
