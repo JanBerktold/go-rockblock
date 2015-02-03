@@ -12,10 +12,9 @@ type Device struct {
 	addr   string
 
 	// AT Command handling
-	writingCommands bool
-	queueCommands   bool
-	commandQueue    *lane.Queue
-	commandCurrent  *command
+	queueCommands  bool
+	commandQueue   *lane.Queue
+	commandCurrent *command
 }
 
 // Internal function to load required dependencies based upon configuration
@@ -33,7 +32,6 @@ func connect(addr string, options []func(*Device)) (*Device, error) {
 		nil,
 		addr,
 		false,
-		true,
 		nil,
 		nil,
 	}
