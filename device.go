@@ -29,7 +29,6 @@ func connect(addr string, options []func(*Device)) (*Device, error) {
 	dev := &Device{nil, addr, true, nil}
 
 	// apply user options
-	// perhaps move this prior to initalization of the serial port?
 	for _, fun := range options {
 		fun(dev)
 	}
