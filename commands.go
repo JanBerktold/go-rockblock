@@ -9,7 +9,7 @@ type command struct {
 
 func handleCommand(dev *Device, com *command) {
 	// Simulate some work
-	time.Sleep(5 * time.Second)
+	time.Sleep(2 * time.Second)
 
 	if !dev.queueCommands && dev.commandCurrent != com {
 		com.result <- ""

@@ -34,6 +34,7 @@ func connect(addr string, options []func(*Device)) (*Device, error) {
 	dev := &Device{
 		nil,
 		addr,
+		sync.Mutex{},
 		false, false,
 		nil,
 		nil,
