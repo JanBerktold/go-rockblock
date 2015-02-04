@@ -13,6 +13,7 @@ type Device struct {
 
 	// AT Command handling
 	queueCommands  bool
+	commandWriting bool
 	commandQueue   *lane.Queue
 	commandCurrent *command
 }
@@ -31,7 +32,7 @@ func connect(addr string, options []func(*Device)) (*Device, error) {
 	dev := &Device{
 		nil,
 		addr,
-		false,
+		false, false,
 		nil,
 		nil,
 	}
