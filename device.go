@@ -5,6 +5,7 @@ import (
 	"github.com/oleiade/lane"
 	"github.com/tarm/goserial"
 	"io"
+	"sync"
 )
 
 type Device struct {
@@ -12,6 +13,7 @@ type Device struct {
 	addr   string
 
 	// AT Command handling
+	commandLock    sync.Mutex
 	queueCommands  bool
 	commandWriting bool
 	commandQueue   *lane.Queue

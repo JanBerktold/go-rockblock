@@ -26,17 +26,16 @@ func handleCommand(dev *Device, com *command) {
 	}
 }
 
-// Function handles the execution or
+// Function takes the command end either executes it directly or enqueues it
+// It is blocking until the command is finished or stopped
 func (dev *Device) writeCommand(msg string) (string, error) {
-
-	// Function takes the command end either executes it directly or enqueues it
-	// It is blocking until the command is finished or stopped
-
 	com := &command{
 		msg,
 		make(chan interface{}),
 	}
 
+	// Lock is making sure to limit the command handling goroutines to one
+	dev.commandLock.Lock()
 	if dev.queueCommands {
 		if dev.commandWriting {
 			dev.commandQueue.Enqueue(com)
@@ -49,6 +48,7 @@ func (dev *Device) writeCommand(msg string) (string, error) {
 		dev.commandCurrent = com
 		go handleCommand(dev, com)
 	}
+	dev.commandLock.Unlock()
 
 	resString := (<-com.result).(string)
 	resError := <-com.result
