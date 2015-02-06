@@ -1,10 +1,19 @@
 package rockblock
 
-import "time"
+import (
+	"regexp"
+	"time"
+)
 
 type command struct {
-	msg    string
-	result chan interface{}
+	msg             string
+	keepReg, endReg regexp.Regexp
+	result          chan handleResult
+}
+
+type handleResult struct {
+	msg string
+	err error
 }
 
 func handleCommand(dev *Device, com *command) {
@@ -12,11 +21,9 @@ func handleCommand(dev *Device, com *command) {
 	time.Sleep(2 * time.Second)
 
 	if !dev.queueCommands && dev.commandCurrent != com {
-		com.result <- ""
-		com.result <- ErrCancelledTask
+		com.result <- handleResult{"", ErrCancelledTask}
 	} else {
-		com.result <- com.msg + " asfasfas"
-		com.result <- nil
+		com.result <- handleResult{com.msg + " asfasfas", nil}
 	}
 
 	if !dev.queueCommands || dev.commandQueue.Empty() {
@@ -28,10 +35,12 @@ func handleCommand(dev *Device, com *command) {
 
 // Function takes the command end either executes it directly or enqueues it
 // It is blocking until the command is finished or stopped
-func (dev *Device) writeCommand(msg string) (string, error) {
+func (dev *Device) writeCommand(msg string, keepReg, endReg regexp.Regexp) (string, error) {
 	com := &command{
 		msg,
-		make(chan interface{}),
+		keepReg,
+		endReg,
+		make(chan handleResult),
 	}
 
 	// Lock is making sure to limit the command handling goroutines to one
@@ -50,14 +59,7 @@ func (dev *Device) writeCommand(msg string) (string, error) {
 	}
 	dev.commandLock.Unlock()
 
-	resString := (<-com.result).(string)
-	resError := <-com.result
+	result := <-com.result
 
-	// forced to use, consindering error could be nil
-	var actualErr error
-	if resError != nil {
-		actualErr = resError.(error)
-	}
-
-	return resString, actualErr
+	return result.msg, result.err
 }
