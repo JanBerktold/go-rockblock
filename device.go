@@ -14,19 +14,9 @@ type Device struct {
 
 	// AT Command handling
 	commandLock    sync.Mutex
-	queueCommands  bool
 	commandWriting bool
 	commandQueue   *lane.Queue
 	commandCurrent *command
-}
-
-// Internal function to load required dependencies based upon configuration
-func (dev *Device) initialize() {
-
-	if dev.queueCommands {
-		dev.commandQueue = lane.NewQueue()
-	}
-
 }
 
 func connect(addr string, options []func(*Device)) (*Device, error) {
@@ -35,8 +25,8 @@ func connect(addr string, options []func(*Device)) (*Device, error) {
 		nil,
 		addr,
 		sync.Mutex{},
-		false, false,
-		nil,
+		false,
+		lane.NewQueue(),
 		nil,
 	}
 
@@ -44,8 +34,6 @@ func connect(addr string, options []func(*Device)) (*Device, error) {
 	for _, fun := range options {
 		fun(dev)
 	}
-
-	dev.initialize()
 
 	if s, err := serial.OpenPort(conf); err == nil {
 		dev.serial = s
