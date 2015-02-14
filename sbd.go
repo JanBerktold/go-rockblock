@@ -4,10 +4,7 @@ import (
 	"time"
 )
 
-func (dev *Device) SendBinaryMessage(msg []byte) {
-}
-
-func (dev *Device) SendMessage(msg string) {
+func (dev *Device) SendMessage(msg []byte) {
 }
 
 // ReadMessage is responsible for recieving a message from the Iridium network
@@ -26,6 +23,13 @@ func (dev *Device) ReadMessageWithTimeout(dur time.Duration) Message {
 	return Message{}
 }
 
-func (dev *Device) initiateSession() {
+func (dev *Device) checkMessage() {
 
+}
+
+func (dev *Device) initiateSession() {
+	dev.execCommand(func() []string {
+		dev.write("AT+SBDRB")
+		return nil
+	})
 }

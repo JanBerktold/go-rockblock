@@ -12,3 +12,9 @@ func TestRegexTimeAnswer(t *testing.T) {
 		t.FailNow()
 	}
 }
+
+func TestSessionAnswer(t *testing.T) {
+	if !regSesResult.MatchString("+SBDIX: -0, a") {
+		t.FailNow()
+	}
+}
