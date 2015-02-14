@@ -30,6 +30,8 @@ func (dev *Device) checkMessage() {
 func (dev *Device) initiateSession() {
 	dev.execCommand(func() []string {
 		dev.write("AT+SBDRB")
+		dev.readUntil(regSesResult)
+
 		return nil
 	})
 }
