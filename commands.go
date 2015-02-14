@@ -6,6 +6,26 @@ import (
 
 type command func() []string
 
+func (dev *Device) pullMessages() {
+	buf := make([]byte, 512)
+	for {
+		if n, err := dev.serial.Read(buf); err == nil {
+			msg := string(buf[0:n])
+			// check for unsolicted messages
+			if regSbRing.MatchString(msg) {
+
+			} else if regAreg.MatchString(msg) {
+
+			} else {
+				dev.serialChannel <- msg
+			}
+		} else {
+			dev.serialChannel <- ""
+			return
+		}
+	}
+}
+
 func (dev *Device) execCommand(com command) []string {
 	dev.commandLock.Lock()
 	defer dev.commandLock.Unlock()
@@ -19,11 +39,9 @@ func (dev *Device) write(str string) {
 func (dev *Device) readUntil(done *regexp.Regexp) []string {
 	result := make([]string, 10)
 	i := 0
-	buf := make([]byte, 512)
 	for {
-		n, err := dev.serial.Read(buf)
-		if err == nil {
-			str := string(buf[0:n])
+		str := <-dev.serialChannel
+		if len(str) > 0 {
 			result[i] = str
 			i++
 			if done.MatchString(str) {

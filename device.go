@@ -15,7 +15,8 @@ type Device struct {
 	serial io.ReadWriteCloser
 	addr   string
 
-	commandLock sync.Mutex
+	serialChannel chan string
+	commandLock   sync.Mutex
 }
 
 func connect(addr string) (*Device, error) {
@@ -23,6 +24,7 @@ func connect(addr string) (*Device, error) {
 	dev := &Device{
 		nil,
 		addr,
+		make(chan string),
 		sync.Mutex{},
 	}
 

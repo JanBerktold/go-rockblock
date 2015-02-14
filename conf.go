@@ -18,4 +18,6 @@ var (
 	regNetwork    = regexp.MustCompile("CIEV:0,[^0]")
 	regTimeAnswer = regexp.MustCompile("\\+CCLK:[0-9]{2}/[0-9]{2}/[0-9]{2},[0-9]{2}:[0-9]{2}:[0-9]{2}")
 	regSesResult  = regexp.MustCompile("\\+SBDIX: ")
+	regSbRing     = regexp.MustCompile("^SBDRING")
+	regAreg       = regexp.MustCompile("^\\+AREG")
 )

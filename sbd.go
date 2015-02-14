@@ -23,6 +23,13 @@ func (dev *Device) ReadMessageWithTimeout(dur time.Duration) Message {
 	return Message{}
 }
 
+// CheckMessages initiates a session with the Iridium network and pulls any available
+// messages down to the device before returning them to any listenting
+// ReadMessage/ReadMessageWithTimeout calls.
+func (dev *Device) CheckMessages() {
+	dev.initiateSession()
+}
+
 func (dev *Device) checkMessage() {
 
 }
