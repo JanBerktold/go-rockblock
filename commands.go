@@ -4,9 +4,9 @@ import (
 	"regexp"
 )
 
-type Command func() []string
+type command func() []string
 
-func (dev *Device) execCommand(com Command) []string {
+func (dev *Device) execCommand(com command) []string {
 	dev.commandLock.Lock()
 	defer dev.commandLock.Unlock()
 	return com()
