@@ -22,15 +22,15 @@ func (dev *Device) readUntil(done *regexp.Regexp) []string {
 	buf := make([]byte, 512)
 	for {
 		n, err := dev.serial.Read(buf)
-		if err != nil {
-			return result[0:i]
-		} else {
+		if err == nil {
 			str := string(buf[0:n])
 			result[i] = str
 			i++
 			if done.MatchString(str) {
 				return result[0:i]
 			}
+		} else {
+			return result[0:i]
 		}
 	}
 }
