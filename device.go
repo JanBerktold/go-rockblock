@@ -36,7 +36,7 @@ func Connect(addr string) (*Device, error) {
 }
 
 // MustConnect functions just like Connect, however it assumes that the connection will suceed and therefore does not return an error on failure, but instead panics.
-// Should be used instead ofdev, _ := rockblock.connect("dev/ttr") in order to prevent missed errors.
+// Should be used instead of the Connect method with an ignored error parameter in order to prevent missed errors.
 func MustConnect(addr string) *Device {
 	dev, err := connect(addr)
 	if err != nil {
