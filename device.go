@@ -1,3 +1,4 @@
+// This package provides a golang interface for communicating with a rockblock device over a serial connection.
 package rockblock
 
 import (
@@ -23,8 +24,7 @@ func connect(addr string) (*Device, error) {
 	}
 
 	if s, err := serial.OpenPort(conf); err == nil {
-		dev.serial =
-			s
+		dev.serial = s
 		return dev, nil
 	} else {
 		return nil, err

@@ -40,6 +40,8 @@ func (dev *Device) waitForNetwork() {
 	})
 }
 
+// GetSystemTime returns the current device time, as parsed from +CCLK?.
+// Request can fail in the case of bad connection or malformed replies.
 func (dev *Device) GetSystemTime() (time.Time, error) {
 	str := dev.execCommand(func() []string {
 		dev.write("AT+CCLK?")
