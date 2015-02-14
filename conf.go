@@ -5,6 +5,12 @@ import (
 	"regexp"
 )
 
+const (
+	bufferMO = iota
+	bufferMT
+	bufferAll
+)
+
 var (
 	ErrNoDataRecieved = errors.New("no or invalid data recieved")
 
