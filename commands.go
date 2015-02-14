@@ -2,54 +2,44 @@ package rockblock
 
 import (
 	"regexp"
-	"time"
 )
 
-type command struct {
-	msg             string
-	keepReg, endReg *regexp.Regexp
-	result          chan handleResult
-}
+type Command func() []string
 
-type handleResult struct {
-	msg string
-	err error
-}
-
-func handleCommand(dev *Device, com *command) {
-	// Simulate some work
-	time.Sleep(2 * time.Second)
-
-	com.result <- handleResult{com.msg + " asfasfas", nil}
-
-	if dev.commandQueue.Empty() {
-		dev.commandWriting = false
-	} else {
-		handleCommand(dev, dev.commandQueue.Dequeue().(*command))
-	}
-}
-
-// Function takes the command end either executes it directly or enqueues it
-// It is blocking until the command is finished or stopped
-func (dev *Device) writeCommand(msg string, keepReg, endReg *regexp.Regexp) (string, error) {
-	com := &command{
-		msg,
-		keepReg,
-		endReg,
-		make(chan handleResult),
-	}
-
-	// Lock is making sure to limit the command handling goroutines to one
+func (dev *Device) execCommand(com Command) []string {
 	dev.commandLock.Lock()
-	if dev.commandWriting {
-		dev.commandQueue.Enqueue(com)
-	} else {
-		dev.commandWriting = true
-		go handleCommand(dev, com)
+	defer dev.commandLock.Unlock()
+	return com()
+}
+
+func (dev *Device) write(str string) {
+	dev.serial.Write([]byte(str))
+}
+
+func (dev *Device) readUntil(done *regexp.Regexp) []string {
+	result := make([]string, 10)
+	i := 0
+	buf := make([]byte, 512)
+	for {
+		n, err := dev.serial.Read(buf)
+		if err != nil {
+			return result[0:i]
+		} else {
+			str := string(buf[0:n])
+			result[i] = str
+			i++
+			if done.MatchString(str) {
+				return result[0:i]
+			}
+		}
 	}
-	dev.commandLock.Unlock()
+}
 
-	result := <-com.result
-
-	return result.msg, result.err
+func returnFirstMatch(str []string, reg *regexp.Regexp) string {
+	for _, str := range str {
+		if reg.MatchString(str) {
+			return str
+		}
+	}
+	return ""
 }

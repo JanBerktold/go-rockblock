@@ -2,7 +2,6 @@ package rockblock
 
 import (
 	"fmt"
-	"github.com/oleiade/lane"
 	"github.com/tarm/goserial"
 	"io"
 	"sync"
@@ -12,11 +11,7 @@ type Device struct {
 	serial io.ReadWriteCloser
 	addr   string
 
-	// AT Command handling
-	commandLock    sync.Mutex
-	commandWriting bool
-	commandQueue   *lane.Queue
-	commandCurrent *command
+	commandLock sync.Mutex
 }
 
 func connect(addr string, options []func(*Device)) (*Device, error) {
@@ -25,9 +20,6 @@ func connect(addr string, options []func(*Device)) (*Device, error) {
 		nil,
 		addr,
 		sync.Mutex{},
-		false,
-		lane.NewQueue(),
-		nil,
 	}
 
 	// apply user options
@@ -36,7 +28,8 @@ func connect(addr string, options []func(*Device)) (*Device, error) {
 	}
 
 	if s, err := serial.OpenPort(conf); err == nil {
-		dev.serial = s
+		dev.serial =
+			s
 		return dev, nil
 	} else {
 		return nil, err

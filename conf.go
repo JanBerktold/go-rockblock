@@ -6,9 +6,11 @@ import (
 )
 
 var (
-	ErrCancelledTask = errors.New("AT command task has been cancelled")
+	ErrNoDataRecieved = errors.New("no or invalid data recieved")
 
-	RegOK = regexp.MustCompile("^OK\r")
+	RegOK         = regexp.MustCompile("^OK\r")
+	RegNetwork    = regexp.MustCompile("CIEV:0,[^0]")
+	RegTimeAnswer = regexp.MustCompile("\\+CCLK:[0-9]{2}/[0-9]{2}/[0-9]{2},[0-9]{2}:[0-9]{2}:[0-9]{2}")
 )
 
 func SetQueueMode(queue bool) func(*Device) {
