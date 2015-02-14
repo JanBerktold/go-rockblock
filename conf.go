@@ -8,7 +8,7 @@ import (
 var (
 	ErrNoDataRecieved = errors.New("no or invalid data recieved")
 
-	RegOK         = regexp.MustCompile("^OK\r")
-	RegNetwork    = regexp.MustCompile("CIEV:0,[^0]")
-	RegTimeAnswer = regexp.MustCompile("\\+CCLK:[0-9]{2}/[0-9]{2}/[0-9]{2},[0-9]{2}:[0-9]{2}:[0-9]{2}")
+	regOK         = regexp.MustCompile("^OK\r")
+	regNetwork    = regexp.MustCompile("CIEV:0,[^0]")
+	regTimeAnswer = regexp.MustCompile("\\+CCLK:[0-9]{2}/[0-9]{2}/[0-9]{2},[0-9]{2}:[0-9]{2}:[0-9]{2}")
 )
