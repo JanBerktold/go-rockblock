@@ -21,7 +21,15 @@ func (dev *Device) enableRegistration() {
 	})
 }
 
-func (dev *Device) clearBuffers(ty int) {
+func (dev *Device) enableRingAlert() {
+	dev.execCommand(func() []string {
+		dev.write("AT+SBDMTA=1")
+		dev.readUntil(regOK)
+		return nil
+	})
+}
+
+func (dev *Device) clearBuffer(ty int) {
 	if ty > bufferAll {
 		panic("Attempted to clear buffers with invalid type")
 	}

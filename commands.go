@@ -1,6 +1,7 @@
 package rockblock
 
 import (
+	"fmt"
 	"regexp"
 )
 
@@ -11,11 +12,12 @@ func (dev *Device) pullMessages() {
 	for {
 		if n, err := dev.serial.Read(buf); err == nil {
 			msg := string(buf[0:n])
-			// check for unsolicted messages
+			// check for unsolicited messages
 			if regSbRing.MatchString(msg) {
-
+				fmt.Println(msg)
+				dev.initiateSession()
 			} else if regAreg.MatchString(msg) {
-
+				fmt.Println(msg)
 			} else {
 				dev.serialChannel <- msg
 			}

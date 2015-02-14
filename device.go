@@ -30,16 +30,21 @@ func connect(addr string) (*Device, error) {
 
 	if s, err := serial.OpenPort(conf); err == nil {
 		dev.serial = s
+
+		dev.echoOff()
+		dev.clearBuffer(bufferAll)
+		dev.enableRegistration()
+		dev.enableRingAlert()
+
 		return dev, nil
 	} else {
 		return nil, err
 	}
 }
 
-// Connect attempts to create a connection with the serial port whom the given address belongs to.
-// In case of a succeeded opening, a Device object representing the connection will be returned.
-// This method does not attempt to start communication with the device and therefore will suceed on
-// any available serial port.
+// Connect attempts to create a connection with the serial port whom the given address belongs to as well as
+// performing original setup procedures. In case of a succeeded opening, a Device object representing the
+// connection will be returned.
 func Connect(addr string) (*Device, error) {
 	return connect(addr)
 }
