@@ -21,7 +21,6 @@ func (dev *Device) GetSystemTime() (time.Time, error) {
 	fmt.Println(str)
 	if strTime := returnFirstMatch(str, RegTimeAnswer); len(strTime) > 0 {
 		return time.Parse("“06/01/02,15:04:05", strTime)
-	} else {
-		return time.Now(), ErrNoDataRecieved
 	}
+	return time.Now(), ErrNoDataRecieved
 }
