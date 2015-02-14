@@ -8,6 +8,9 @@ import (
 	"sync"
 )
 
+type Message struct {
+}
+
 type Device struct {
 	serial io.ReadWriteCloser
 	addr   string
