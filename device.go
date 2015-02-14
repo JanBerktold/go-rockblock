@@ -14,17 +14,12 @@ type Device struct {
 	commandLock sync.Mutex
 }
 
-func connect(addr string, options []func(*Device)) (*Device, error) {
+func connect(addr string) (*Device, error) {
 	conf := &serial.Config{Name: addr, Baud: 19200}
 	dev := &Device{
 		nil,
 		addr,
 		sync.Mutex{},
-	}
-
-	// apply user options
-	for _, fun := range options {
-		fun(dev)
 	}
 
 	if s, err := serial.OpenPort(conf); err == nil {
@@ -36,12 +31,14 @@ func connect(addr string, options []func(*Device)) (*Device, error) {
 	}
 }
 
-func Connect(addr string, options ...func(*Device)) (*Device, error) {
-	return connect(addr, options)
+func Connect(addr string) (*Device, error) {
+	return connect(addr)
 }
 
-func MustConnect(addr string, options ...func(*Device)) *Device {
-	dev, err := connect(addr, options)
+// MustConnect functions just like Connect, however it assumes that the connection will suceed and therefore does not return an error on failure, but instead panics.
+// Should be used instead ofdev, _ := rockblock.connect("dev/ttr") in order to prevent missed errors.
+func MustConnect(addr string) *Device {
+	dev, err := connect(addr)
 	if err != nil {
 		panic(fmt.Sprintf("MustConnect (%q) failed with error %q", addr, err))
 	}
