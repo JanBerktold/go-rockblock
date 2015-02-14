@@ -31,12 +31,16 @@ func connect(addr string) (*Device, error) {
 	}
 }
 
+// Connect attempts to create a connection with the serial port whom the given address belongs to.
+// In case of a succeeded opening, a Device object representing the connection will be returned.
+// This method does not attempt to start communication with the device and therefore will suceed on
+// any available serial port.
 func Connect(addr string) (*Device, error) {
 	return connect(addr)
 }
 
 // MustConnect functions just like Connect, however it assumes that the connection will suceed and therefore does not return an error on failure, but instead panics.
-// Should be used instead of the Connect method with an ignored error parameter in order to prevent missed errors.
+// Should be used instead of the Connect method with an ignored error parameter in order to prevent dropped errors.
 func MustConnect(addr string) *Device {
 	dev, err := connect(addr)
 	if err != nil {
