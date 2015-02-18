@@ -1,7 +1,7 @@
 package rockblock
 
 import (
-	"fmt"
+	"bytes"
 	"regexp"
 )
 
@@ -9,20 +9,29 @@ type command func() []string
 
 func (dev *Device) pullMessages() {
 	buf := make([]byte, 512)
+	command := bytes.NewBufferString("")
 	for {
 		if n, err := dev.serial.Read(buf); err == nil {
 			msg := string(buf[0:n])
-			// check for unsolicited messages
-			if regSbRing.MatchString(msg) {
-				fmt.Println(msg)
-				dev.initiateSession()
-			} else if regAreg.MatchString(msg) {
-				fmt.Println(msg)
-			} else {
-				dev.serialChannel <- msg
+
+			for _, str := range msg {
+				if str == '\r' {
+					actualMessage := command.String()
+
+					if regSbRing.MatchString(actualMessage) {
+						dev.initiateSession()
+					} else if regAreg.MatchString(actualMessage) {
+					} else {
+						dev.serialChannel <- actualMessage
+					}
+
+					command.Reset()
+				} else if str != '\n' {
+					command.WriteRune(str)
+				}
 			}
 		} else {
-			dev.serialChannel <- ""
+			dev.serialChannel <- "end_this"
 			return
 		}
 	}
@@ -39,11 +48,11 @@ func (dev *Device) write(str string) {
 }
 
 func (dev *Device) readUntil(done *regexp.Regexp) []string {
-	result := make([]string, 10)
+	result := make([]string, 255)
 	i := 0
 	for {
 		str := <-dev.serialChannel
-		if len(str) > 0 {
+		if str != "end_this" {
 			result[i] = str
 			i++
 			if done.MatchString(str) {

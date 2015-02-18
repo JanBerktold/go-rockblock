@@ -30,12 +30,14 @@ func connect(addr string) (*Device, error) {
 
 	if s, err := serial.OpenPort(conf); err == nil {
 		dev.serial = s
+		go dev.pullMessages()
 
 		dev.echoOff()
 		dev.clearBuffer(bufferAll)
 		dev.enableRegistration()
 		dev.enableRingAlert()
 
+		fmt.Println(dev.GetSystemTime())
 		return dev, nil
 	} else {
 		return nil, err
